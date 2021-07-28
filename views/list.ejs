@@ -7,7 +7,10 @@
 <div class="sidebar">
   <ul>
     <% for (let i = 0; i < lists.length; i++) { %>
-    <li><a href="/list/<%= lists[i] %>"><%= lists[i] %></a></li>
+    <li>
+      <a href="/list/<%= lists[i] %>"><%= lists[i] %></a>
+      <button onclick="deleteList('<%= lists[i] %>')">❌</button>
+    </li>
     <% } %>
   </ul>
   <form action="/lists" method="post">

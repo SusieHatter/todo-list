@@ -47,6 +47,16 @@ app.post("/list/:listTitle?", function (req, res) {
   res.redirect(`/list/${listTitle}`);
 });
 
+app.delete("/list/:listTitle", function (req, res) {
+  const listTitle = req.params.listTitle;
+  if (listTitle === DEFAULT_NAME) {
+    res.send("Can't delete default");
+    return;
+  }
+  delete listItems[listTitle];
+  res.send("200");
+});
+
 app.delete("/list/:listTitle/:itemIndex", function (req, res) {
   const listTitle = req.params.listTitle;
   const items = listItems[listTitle];
