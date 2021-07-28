@@ -6,9 +6,16 @@ const DEFAULT_NAME = "Default";
 
 // Example items to render while we have no database
 const listItems = {
-  [DEFAULT_NAME]: ["throw out trash", "clean kitchen"],
-  Shopping: ["apple", "banana", "avocado"],
-  "Work Items": ["write code"],
+  [DEFAULT_NAME]: [
+    { item: "throw out trash", done: false },
+    { item: "clean kitchen", done: false },
+  ],
+  Shopping: [
+    { item: "apple", done: false },
+    { item: "banana", done: false },
+    { item: "avocado", done: false },
+  ],
+  "Work Items": [{ item: "write code", done: false }],
 };
 
 app.set("view engine", "ejs");
@@ -43,7 +50,7 @@ app.post("/list/:listTitle?", function (req, res) {
     res.redirect("/");
   }
   const item = req.body.newItem;
-  items.push(item);
+  items.push({ item, done: false });
   res.redirect(`/list/${listTitle}`);
 });
 
@@ -54,6 +61,18 @@ app.delete("/list/:listTitle", function (req, res) {
     return;
   }
   delete listItems[listTitle];
+  res.send("200");
+});
+
+app.put("/list/:listTitle/:itemIndex", function (req, res) {
+  const listTitle = req.params.listTitle;
+  const items = listItems[listTitle];
+  if (items === undefined) {
+    res.redirect("/");
+  }
+  const itemIndex = parseInt(req.params.itemIndex);
+  const checked = req.body.checked;
+  items[itemIndex].done = checked;
   res.send("200");
 });
 

@@ -27,8 +27,9 @@
 <div class="box">
   <% for (let i = 0; i < items.length; i++) { %>
   <div class="item">
-    <input type="checkbox" />
-    <p><%= items[i] %></p>
+    <input onchange="checkItem('<%= listTitle %>', <%= i %>, this.checked)"
+    type="checkbox" <%= items[i].done ? "checked" : "" %> />
+    <p><%= items[i].item %></p>
     <button
       class="delete-button"
       onclick="deleteItem('<%= listTitle %>', <%= i %>)"
