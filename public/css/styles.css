@@ -55,12 +55,12 @@ p {
   color: #00204a;
 }
 
-form {
+.new-item-form {
   text-align: center;
   margin-left: 20px;
 }
 
-button {
+.new-item-form button {
   min-height: 50px;
   width: 50px;
   border-radius: 50%;
@@ -72,7 +72,7 @@ button {
   border-width: 0;
 }
 
-input[type="text"] {
+.new-item-form input[type="text"] {
   text-align: center;
   height: 60px;
   top: 10px;
@@ -83,12 +83,12 @@ input[type="text"] {
   width: 313px;
 }
 
-input[type="text"]:focus {
+.new-item-form input[type="text"]:focus {
   outline: none;
   box-shadow: inset 0 -3px 0 0 #a683e3;
 }
 
-::placeholder {
+.new-item-form ::placeholder {
   color: grey;
   opacity: 1;
 }

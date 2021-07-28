@@ -22,16 +22,21 @@ app.use(
 
 app.use("/", express.static("public"));
 
-app.get("/:listTitle?", function (req, res) {
+app.get("/", function (req, res) {
+  res.redirect(`/list/${DEFAULT_NAME}`);
+});
+
+app.get("/list/:listTitle?", function (req, res) {
   const listTitle = req.params.listTitle || DEFAULT_NAME;
   const items = listItems[listTitle];
   if (items === undefined) {
     res.redirect("/");
   }
-  res.render("list", { listTitle, items });
+  const lists = Object.keys(listItems);
+  res.render("list", { listTitle, items, lists });
 });
 
-app.post("/:listTitle?", function (req, res) {
+app.post("/list/:listTitle?", function (req, res) {
   const listTitle = req.params.listTitle || DEFAULT_NAME;
   const items = listItems[listTitle];
   if (items === undefined) {
@@ -39,7 +44,13 @@ app.post("/:listTitle?", function (req, res) {
   }
   const item = req.body.newItem;
   items.push(item);
-  res.redirect(`/${listName}`);
+  res.redirect(`/list/${listTitle}`);
+});
+
+app.post("/lists", function (req, res) {
+  const listTitle = req.body.listTitle;
+  listItems[listTitle] = [];
+  res.redirect(`/list/${listTitle}`);
 });
 
 app.listen(3000, function () {

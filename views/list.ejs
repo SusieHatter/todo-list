@@ -4,6 +4,23 @@
   <h1><%= listTitle %> ToDo list</h1>
 </div>
 
+<div class="sidebar">
+  <ul>
+    <% for (let i = 0; i < lists.length; i++) { %>
+    <li><a href="/list/<%= lists[i] %>"><%= lists[i] %></a></li>
+    <% } %>
+  </ul>
+  <form action="/lists" method="post">
+    <input
+      type="text"
+      name="listTitle"
+      placeholder="New item"
+      autocomplete="off"
+    />
+    <button type="submit">+</button>
+  </form>
+</div>
+
 <div class="box">
   <% for (let i = 0; i < items.length; i++) { %>
   <div class="item">
@@ -12,7 +29,11 @@
   </div>
   <% } %>
 
-  <form class="item" action="/<%= listTitle %>" method="post">
+  <form
+    class="new-item-form item"
+    action="/list/<%= listTitle %>"
+    method="post"
+  >
     <input
       type="text"
       name="newItem"
