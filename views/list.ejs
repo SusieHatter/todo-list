@@ -17,7 +17,7 @@
       placeholder="New item"
       autocomplete="off"
     />
-    <button type="submit">+</button>
+    <button class="button-list" type="submit">+</button>
   </form>
 </div>
 
@@ -26,6 +26,12 @@
   <div class="item">
     <input type="checkbox" />
     <p><%= items[i] %></p>
+    <button
+      class="delete-button"
+      onclick="deleteItem('<%= listTitle %>', <%= i %>)"
+    >
+      ❌
+    </button>
   </div>
   <% } %>
 

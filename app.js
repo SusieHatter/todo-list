@@ -47,6 +47,19 @@ app.post("/list/:listTitle?", function (req, res) {
   res.redirect(`/list/${listTitle}`);
 });
 
+app.delete("/list/:listTitle/:itemIndex", function (req, res) {
+  const listTitle = req.params.listTitle;
+  const items = listItems[listTitle];
+  if (items === undefined) {
+    res.redirect("/");
+  }
+  const itemIndex = parseInt(req.params.itemIndex);
+  listItems[listTitle] = items.filter((_, i) => {
+    return i !== itemIndex;
+  });
+  res.send("200");
+});
+
 app.post("/lists", function (req, res) {
   const listTitle = req.body.listTitle;
   listItems[listTitle] = [];

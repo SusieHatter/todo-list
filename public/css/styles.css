@@ -26,6 +26,43 @@ h1 {
   text-align: center;
 }
 
+.sidebar {
+  background-color: #a683e3;
+  position: absolute;
+  padding: 5px;
+  border-radius: 3%;
+}
+
+.sidebar > ul {
+  list-style-type: none;
+  font-family: "Montserrat";
+  text-decoration: none;
+  font-size: 2vw;
+  line-height: 4vw;
+  width: 100%;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  background-color: #f1f1f1;
+}
+
+.button-list {
+  min-height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  border-color: transparent;
+  background-color: #f1f1f1;
+  color: #a683e3;
+  font-size: 30px;
+  padding-bottom: 6px;
+  border-width: 0;
+}
+
 .item {
   font-family: "Montserrat";
   min-height: 70px;
