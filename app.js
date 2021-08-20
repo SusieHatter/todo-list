@@ -1,22 +1,8 @@
 const express = require("express");
-
+const mongoose = require("mongoose");
 const app = express();
 
 const DEFAULT_NAME = "Default";
-
-// Example items to render while we have no database
-const listItems = {
-  [DEFAULT_NAME]: [
-    { item: "throw out trash", done: false },
-    { item: "clean kitchen", done: false },
-  ],
-  Shopping: [
-    { item: "apple", done: false },
-    { item: "banana", done: false },
-    { item: "avocado", done: false },
-  ],
-  "Work Items": [{ item: "write code", done: false }],
-};
 
 app.set("view engine", "ejs");
 
@@ -27,7 +13,54 @@ app.use(
   })
 );
 
+mongoose.connect("mongodb://localhost:27017/todolistDB", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+const itemsSchema = {
+  name: String,
+};
+
+const Item = mongoose.model("item", itemsSchema);
+
+const item1 = new Item({
+  name: "Welcome to your todo list!",
+});
+
+const item2 = new Item({
+  name: "Click the + button to add a new item",
+});
+
+const item3 = new Item({
+  name: "Click X to delete an item",
+});
+
+const defaultItems = [item1, item2, item3];
+
+Item.insertMany(defaultItems, function (err) {
+  if (err) {
+    console.log(err, "There is an error in the item");
+  } else {
+    console.log("Items added");
+  }
+});
+
 app.use("/", express.static("public"));
+
+// Example items to render while we have no database
+// const listItems = {
+//   [DEFAULT_NAME]: [
+//     { item: "throw out trash", done: false },
+//     { item: "clean kitchen", done: false },
+//   ],
+//   Shopping: [
+//     { item: "apple", done: false },
+//     { item: "banana", done: false },
+//     { item: "avocado", done: false },
+//   ],
+//   "Work Items": [{ item: "write code", done: false }],
+// };
 
 app.get("/", function (req, res) {
   res.redirect(`/list/${DEFAULT_NAME}`);
