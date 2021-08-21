@@ -1,8 +1,9 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const app = express();
+import express from "express";
 
-const DEFAULT_NAME = "Default";
+import { DEFAULT_NAME } from "./constants.js";
+import { List } from "./models.js";
+
+const app = express();
 
 app.set("view engine", "ejs");
 
@@ -13,121 +14,85 @@ app.use(
   })
 );
 
-mongoose.connect("mongodb://localhost:27017/todolistDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-const itemsSchema = {
-  name: String,
-};
-
-const Item = mongoose.model("item", itemsSchema);
-
-const item1 = new Item({
-  name: "Welcome to your todo list!",
-});
-
-const item2 = new Item({
-  name: "Click the + button to add a new item",
-});
-
-const item3 = new Item({
-  name: "Click X to delete an item",
-});
-
-const defaultItems = [item1, item2, item3];
-
-Item.insertMany(defaultItems, function (err) {
-  if (err) {
-    console.log(err, "There is an error in the item");
-  } else {
-    console.log("Items added");
-  }
-});
-
 app.use("/", express.static("public"));
 
-// Example items to render while we have no database
-// const listItems = {
-//   [DEFAULT_NAME]: [
-//     { item: "throw out trash", done: false },
-//     { item: "clean kitchen", done: false },
-//   ],
-//   Shopping: [
-//     { item: "apple", done: false },
-//     { item: "banana", done: false },
-//     { item: "avocado", done: false },
-//   ],
-//   "Work Items": [{ item: "write code", done: false }],
-// };
-
-app.get("/", function (req, res) {
+app.get("/", async function (req, res) {
   res.redirect(`/list/${DEFAULT_NAME}`);
 });
 
-app.get("/list/:listTitle?", function (req, res) {
+app.get("/list/:listTitle?", async function (req, res) {
   const listTitle = req.params.listTitle || DEFAULT_NAME;
-  const items = listItems[listTitle];
-  if (items === undefined) {
+  const list = await List.findOne({ name: listTitle }).exec();
+  if (list === null) {
     res.redirect("/");
   }
-  const lists = Object.keys(listItems);
+  const items = list.items;
+  const lists = (await List.find().exec()).map((list) => list.name);
   res.render("list", { listTitle, items, lists });
 });
 
-app.post("/list/:listTitle?", function (req, res) {
+app.post("/list/:listTitle?", async function (req, res) {
   const listTitle = req.params.listTitle || DEFAULT_NAME;
-  const items = listItems[listTitle];
-  if (items === undefined) {
+  const list = await List.findOne({ name: listTitle }).exec();
+  if (list === null) {
     res.redirect("/");
   }
+  const items = list.items;
   const item = req.body.newItem;
   items.push({ item, done: false });
+  await List.updateOne({ name: listTitle }, { items });
   res.redirect(`/list/${listTitle}`);
 });
 
-app.delete("/list/:listTitle", function (req, res) {
+app.delete("/list/:listTitle", async function (req, res) {
   const listTitle = req.params.listTitle;
   if (listTitle === DEFAULT_NAME) {
     res.send("Can't delete default");
     return;
   }
-  delete listItems[listTitle];
+  await List.deleteOne({ name: listTitle });
   res.send("200");
 });
 
-app.put("/list/:listTitle/:itemIndex", function (req, res) {
+app.put("/list/:listTitle/:itemIndex", async function (req, res) {
   const listTitle = req.params.listTitle;
-  const items = listItems[listTitle];
-  if (items === undefined) {
+  const list = await List.findOne({ name: listTitle }).exec();
+  if (list === null) {
     res.redirect("/");
   }
+  const items = list.items;
   const itemIndex = parseInt(req.params.itemIndex);
   const checked = req.body.checked;
   items[itemIndex].done = checked;
+  await List.updateOne({ name: listTitle }, { items });
   res.send("200");
 });
 
-app.delete("/list/:listTitle/:itemIndex", function (req, res) {
+app.delete("/list/:listTitle/:itemIndex", async function (req, res) {
   const listTitle = req.params.listTitle;
-  const items = listItems[listTitle];
-  if (items === undefined) {
+  const list = await List.findOne({ name: listTitle }).exec();
+  if (list === null) {
     res.redirect("/");
   }
+  const items = list.items;
   const itemIndex = parseInt(req.params.itemIndex);
-  listItems[listTitle] = items.filter((_, i) => {
+  items = items.filter((_, i) => {
     return i !== itemIndex;
   });
+  await List.updateOne({ name: listTitle }, { items });
   res.send("200");
 });
 
-app.post("/lists", function (req, res) {
+app.post("/lists", async function (req, res) {
   const listTitle = req.body.listTitle;
-  listItems[listTitle] = [];
+  const newList = new List({
+    name: listTitle,
+    items: [],
+  });
+  newList.save();
   res.redirect(`/list/${listTitle}`);
 });
 
-app.listen(process.env.PORT || 3000, function () {
+app.listen(process.env.PORT || 3000, async function () {
   console.log("server is up!");
 });
